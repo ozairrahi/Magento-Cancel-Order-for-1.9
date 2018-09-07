@@ -1,0 +1,18 @@
+<?xml version="1.0"?>   
+<layout version="1.0.0">   
+  <sales_order_view>
+    <reference name="root">   
+      <action method="setTemplate"><template>page/2columns-left.phtml</template></action> 
+    </reference>
+    <reference name="head">
+        <action method="addCss"><stylesheet>css/return/styles.css</stylesheet></action> 
+    </reference>
+    <reference name="right">   
+      <block type="returnorder/right" name="returnorder_right" template="returnorder/right.phtml"/>   
+    </reference>   
+    <reference name="content">   
+      <block type="returnorder/index" name="returnorder_index" template="returnorder/index.phtml"/>   
+    </reference> 
+  </sales_order_view>   
+</layout>   
+	

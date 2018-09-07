@@ -1,0 +1,98 @@
+
+<?php $data = $this->getOrder();
+ $orderid = $data->getIncrementId();
+ $customer_id = Mage::getSingleton('customer/session')->getId();
+ $currentdate = Mage::getModel('core/date')->date('Y-m-d H:i:s');
+ $enable = Mage::getStoreConfig('returnorder/returnorder/returnorder');
+ $returndays = Mage::getStoreConfig('returnorder/returnorder/returnorderdays');
+  $statusHistoryItem = $data->getStatusHistoryCollection()->getFirstItem();    
+            $status = $statusHistoryItem->getStatusLabel();    
+            $comment_date = $statusHistoryItem->getCreatedAt();
+            $date1=date_create($comment_date);
+            $date2=date_create(date('Y-m-d h:i:s', time()));
+            $diff=date_diff($date1,$date2);
+            $date_diff = $diff->format("%a");
+            
+
+?>
+<?php if($enable == 1): ?>
+<?php if($date_diff < $returndays): ?>
+<div class="box simple_contacts ">
+<form id="order_return_form" name="simple_contact_form" action="<?php echo $this->getUrl('returnorder/') ?>index/returnOrder" method="post">
+
+    <fieldset class="group-select">
+        <h4 class="legend">LEAVE COMMENT FOR RETURN/CANCLE ORDER</h4>
+        <input type="hidden" value="<?php echo $orderid; ?>" name="orderid">
+        <input type="hidden" value="<?php echo $customer_id; ?>" name="customerid">
+        <input type="hidden" value="<?php echo $currentdate; ?>" name="currentdate">
+        <ul>
+            <li>
+            <div class="clear"></div> 
+            
+                <?php if($data->getStatus() == 'complete' || $data->getStatus() == 'shipped'){ ?>
+                <label for="comment"><p class="required">Reason for return *</p></label><br />
+                <select class="dropdown validate-select" name="listed_reasion">
+                    <option value="">Select...</option>
+                    <option value="Not good product">Not good product</option>
+                    <option value="Defected piece">Defected piece</option>
+                    <option value="Color diffrence">Wrong Color</option>
+                    <option value="Wrong Product or Size">Wrong Size</option>
+                    <option value="Wrong Product Or Item">Wrong Item</option>
+                    <option value="Reason not listed">Reason not listed</option>
+                </select>
+                <?php }else{ ?>
+                <label for="comment"><p class="required">Reason for cancel *</p></label><br />
+                <select class="dropdown validate-select" name="listed_reasion">
+                    <option value="">Select...</option>
+                    <option value="Not interested">Not interested</option>
+                    <option value="Option not listed">Reason not listed</option>
+                </select>
+                <?php } ?>
+
+                <div class="input-box">
+               &nbsp;
+               <label for="comment"><p >Some Comment *</p></label><br />
+                    <textarea name="comment" id="comment" title="Comment" class=" input-text" style="height:100px;" cols="50" rows="3"></textarea>
+                </div>
+            </li>
+        </ul>
+    </fieldset>
+    <div class="button-set">
+        <p class="required">* Required Fields</p>
+        <?php if($data->getStatus() == 'complete' || $data->getStatus() == 'shipped'){ ?>
+        <button class="button" type="submit"><span>Return Order</span></button>
+        <a class="back" href='<?php echo Mage::getBaseUrl();?>sales/order/history/'>« Back to My Orders</a>
+        <?php }else{ ?>
+        <button class="button" type="submit"><span>Cancel Order</span></button>
+        <a class="back" href='<?php echo Mage::getBaseUrl();?>sales/order/history/'>« Back to My Orders</a>
+        <?php } ?>
+ 
+    </div>
+</form>
+<script type="text/javascript">
+    //< ![CDATA[
+        var customForm = new VarienForm('order_return_form');
+    //]]>
+</script>
+<div>
+    <?php
+        $collection = $this->getCollection($customer_id);
+
+        
+    ?>
+    <?php foreach ($collection as $value) { ?>
+        <?php if($value->getOrderid() == $orderid): ?>
+            <ul class="ul-class">
+                <li><span>Date: <?php echo $value->getCurrentdate(); ?></span></li>
+                <li><span>Reason: <?php echo $value->getListedReasion(); ?></span></li>
+                <li><span>Comment: <?php echo $value->getComment(); ?></span></li>
+            </ul>
+        <?php endif; ?>
+    <?php } ?>
+
+
+</div>
+ 
+</div>
+<?php endif; ?>
+<?php endif; ?>
